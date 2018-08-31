@@ -1,10 +1,7 @@
 FROM ubuntu
-MAINTAINER Angel Ramos
-
-ENV PIO_VERSION 0.12.0
-ENV SPARK_VERSION 2.1.1
+MAINTAINER Javier Orta
 ENV ELASTICSEARCH_VERSION 5.5.2
-ENV HBASE_VERSION 1.2.6
+ENV HBASE_VERSION 1.2.6.1
 
 ENV PIO_HOME /PredictionIO-${PIO_VERSION}-incubating  
 ENV PATH=${PIO_HOME}/bin:$PATH
@@ -41,7 +38,8 @@ RUN cd ${HOME} \
 
 USER root
 
-RUN sudo echo "deb http://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list \
+RUN apt-get update && apt-get install -my wget gnupg \
+    && sudo echo "deb http://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823 \
     && apt-get update \
     && apt-get install -y --auto-remove --no-install-recommends sbt \
@@ -65,8 +63,8 @@ RUN cd ${HOME} \
     && rm hbase-${HBASE_VERSION}-bin.tar.gz
 COPY files/hbase-site.xml ${PIO_HOME}/vendors/hbase-${HBASE_VERSION}/conf/hbase-site.xml
 
-RUN sed -i "s|VAR_PIO_HOME|${PIO_HOME}|" ${PIO_HOME}/vendors/hbase-${HBASE_VERSION}/conf/hbase-site.xml \
-    && sed -i "s|VAR_HBASE_VERSION|${HBASE_VERSION}|" ${PIO_HOME}/vendors/hbase-${HBASE_VERSION}/conf/hbase-site.xml
+RUN sudo  sed -i "s|VAR_PIO_HOME|${PIO_HOME}|" ${PIO_HOME}/vendors/hbase-${HBASE_VERSION}/conf/hbase-site.xml \
+    && sudo  sed -i "s|VAR_HBASE_VERSION|${HBASE_VERSION}|" ${PIO_HOME}/vendors/hbase-${HBASE_VERSION}/conf/hbase-site.xml
 
 RUN mkdir ${PIO_HOME}/engines
 
